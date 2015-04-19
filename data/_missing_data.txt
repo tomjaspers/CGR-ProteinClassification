@@ -1,0 +1,12 @@
+These proteins are mentioned in the paper, but we couldn’t seem to find them:
+
+Failed: vp5 of the set P1
+Failed: 11woo of the set P1
+Failed: x92 of the set P1
+
+Failed: 1afb1 of the set Chou
+Failed: 1bbt2 of the set Chou
+Failed: 1cnt1 of the set Chou
+Failed: 2kmb1 of the set Chou
+Failed: 2mcg1 of the set Chou
+Failed: 3pga1 of the set Chou
