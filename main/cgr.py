@@ -72,14 +72,20 @@ def create_cgr(seq, word_length):
     return grid
 
 
-def cgr_dist(X, Y):
-    """ Calculates Euclidean distance between 2 matrixes X and Y
+def create_cgr_signature(sequences, word_length):
+    return [create_cgr(seq, word_length).flatten() for seq in sequences]
+
+
+def cgr_dist(a, b):
+    """ Calculates Euclidean distance between 2 matrices of size p x p,
     representing two CGRs
 
     See Section 2.4
     """
-    # TODO: implement
-    pass
+    if not a.shape == b.shape:
+        raise ValueError("a and b should have same shape")
+    tmp = a - b
+    return np.square(np.sum(np.dot(tmp.T, tmp)))
 
 
 def plot_cgr(cgr):

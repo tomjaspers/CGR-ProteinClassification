@@ -8,6 +8,6 @@ AA_DNA_TRANSLATION = {
 
 
 def translate_aa_to_dna(seq):
-    return ''.join([AA_DNA_TRANSLATION[x] for x in seq])
+    return ''.join([AA_DNA_TRANSLATION.get(x.upper(), '') for x in seq])
 
 
