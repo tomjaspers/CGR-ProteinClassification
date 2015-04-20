@@ -1,6 +1,7 @@
 import os
 import glob
 import random
+from itertools import repeat
 
 from cgr import translate_aa_to_dna
 
@@ -36,8 +37,8 @@ def split_pfam(data, ratio=0.8):
 
         train, test = sequences[:split_point], sequences[split_point:]
 
-        training.extend(zip(train, family*len(train)))
-        testing.extend(zip(test, family*len(test)))
+        training.extend(zip(train, repeat(family, len(train))))
+        testing.extend(zip(test, repeat(family, len(test))))
 
     return training, testing
 
