@@ -14,10 +14,13 @@ def run_cgr_plotter(word_length=8):
 def run_protein_family_classifier(training, testing, word_length=4):
     clf = ProteinFamilyClassifier(word_length=word_length)
     clf.fit(training)
-    metrics = clf.predict(testing)
+    results = clf.predict(testing)
 
-    for k, v in metrics.items():
-        print "{0}: {1}".format(k, v)
+    print "Results for w={0}".format(word_length)
+    print results
+
+    # for k, v in metrics.items():
+    #     print "{0}: {1}".format(k, v)
 
 
 def run_protein_structure_classifier():
@@ -40,14 +43,14 @@ if __name__ == '__main__':
     # run_cgr_plotter(word_length=7)
 
     # # Protein family classification
-    training, testing = split_to_train_test(
-        load_fasta('random/16class.fasta',
-                   sequence_transform=translate_aa_to_dna))
+    # training, testing = split_to_train_test(
+    #     load_fasta('random/16class.fasta',
+    #                sequence_transform=translate_aa_to_dna))
     # training, testing = split_pfam(load_pfam())
-    run_protein_family_classifier(training, testing, word_length=4)
+    # run_protein_family_classifier(training, testing, word_length=4)
 
     # Protein structure classification
-    run_protein_structure_classifier()
+    # run_protein_structure_classifier()
 
     pass  # We comment a lot while trying stuff out
 
