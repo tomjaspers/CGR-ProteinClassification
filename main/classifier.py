@@ -1,22 +1,12 @@
 from __future__ import division
 
-import random
-
+import numpy as np
 from sklearn.lda import LDA
 from sklearn.metrics import precision_recall_fscore_support, roc_auc_score, \
     accuracy_score
-from main.cgr import create_cgr_signature
 
-
-def split_to_train_test(data, ratio=0.70):
-    random.shuffle(data)
-    split_point = int(len(data) *ratio)
-
-    train, test = data[:split_point], data[split_point:]
-
-    assert len(train)+len(test) == len(data)
-
-    return train, test
+from main.cgr import create_cgr, create_cgr_signature, cgr_distance, \
+    translate_aa_to_dna
 
 
 class ProteinFamilyClassifier(object):
@@ -29,8 +19,10 @@ class ProteinFamilyClassifier(object):
         sequences, families = zip(*data)
 
         # Create signatures from the CGR representations, as our X
-        signatures = create_cgr_signature(sequences, self.word_length)
+        signatures = [create_cgr_signature(seq, self.word_length)
+                      for seq in sequences]
 
+        X = np.array(signatures)
         self.clf = LDA()
         self.clf.fit(signatures, families)
 
@@ -43,7 +35,8 @@ class ProteinFamilyClassifier(object):
         sequences, true_families = zip(*data)
 
         # Create signatures from the CGR representations, as our X
-        signatures = create_cgr_signature(sequences, self.word_length)
+        signatures = [create_cgr_signature(seq, self.word_length)
+                      for seq in sequences]
 
         predicted_families = self.clf.predict(signatures)
 
@@ -60,3 +53,4 @@ class ProteinFamilyClassifier(object):
         }
 
         return metrics
+
