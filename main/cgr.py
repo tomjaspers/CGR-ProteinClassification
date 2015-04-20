@@ -55,6 +55,10 @@ def create_cgr(seq, word_length):
     """ Takes a DNA sequence of {C, G, A, T} and returns its
     Chaos Game Representation (CGR) as a matrix.
     """
+    if (set(seq) | {'C', 'G', 'A', 'T'}) != {'C', 'G', 'A', 'T'}:
+        raise ValueError("create_cgr takes a DNA sequence."
+                         "{0} is not a subset of C, G, A, T".format(str(set(seq))))
+
     dim = 2**word_length
     # create dim x dim grid
     grid = np.zeros((dim, dim))
@@ -72,11 +76,11 @@ def create_cgr(seq, word_length):
     return grid
 
 
-def create_cgr_signature(sequences, word_length):
-    return [create_cgr(seq, word_length).flatten() for seq in sequences]
+def create_cgr_signature(seq, word_length):
+    return create_cgr(seq, word_length).flatten()
 
 
-def cgr_dist(a, b):
+def cgr_distance(a, b):
     """ Calculates Euclidean distance between 2 matrices of size p x p,
     representing two CGRs
 
@@ -84,8 +88,7 @@ def cgr_dist(a, b):
     """
     if not a.shape == b.shape:
         raise ValueError("a and b should have same shape")
-    tmp = a - b
-    return np.square(np.sum(np.dot(tmp.T, tmp)))
+    return np.sqrt(np.sum(np.square(a - b)))
 
 
 def plot_cgr(cgr):
@@ -100,12 +103,12 @@ def plot_cgr(cgr):
     # TODO: The paper doesn't say what kind of low-pass filter
     # TODO: The paper doesn't say what kind of log transformation
     with np.errstate(divide='ignore'):  # divide by zero warning
-        data = np.log(cgr)
+        cgr = np.log(cgr)
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    cax = ax.matshow(data, cmap='hot_r')
-    # fig.colorbar(cax)
+    cax = ax.matshow(cgr, cmap='hot_r')
+    fig.colorbar(cax)
     plt.show()
 
 

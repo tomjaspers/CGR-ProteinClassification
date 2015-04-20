@@ -1,7 +1,10 @@
 __author__ = 'tjs'
 
 import unittest
-from main.cgr import find_word_coords
+
+import numpy as np
+
+from main.cgr import find_word_coords, cgr_distance
 
 
 class WordCoordinateTest(unittest.TestCase):
@@ -46,3 +49,27 @@ class WordsFromSequenceTest(unittest.TestCase):
 class CreateCgrTest(unittest.TestCase):
     pass  # TODO: CreateCgrTest
 
+
+class CgrDistanceTest(unittest.TestCase):
+
+    def test_zero_cgr(self):
+        a = np.ones((4, 4))
+        b = np.zeros((4, 4))
+
+        # a contains 16 values 1, so the distance is the square root of 16
+        self.assertEqual(cgr_distance(a, b), 4)
+        self.assertEqual(cgr_distance(a, b), cgr_distance(b, a))
+
+    def test_equal_cgr(self):
+        a = np.ones((4, 4))
+        b = np.ones((4, 4))
+
+        self.assertEqual(cgr_distance(a, b), 0)
+        self.assertEqual(cgr_distance(a, b), cgr_distance(b, a))
+
+    def test_incompatible_cgr(self):
+        a = np.random.random((4, 4))
+        b = np.random.random((2, 2))
+
+        with self.assertRaises(ValueError):
+            cgr_distance(a, b)
