@@ -25,7 +25,7 @@ def run_protein_family_classifier(training, testing, word_length=4):
 
 def run_protein_structure_classifier():
     clf = ProteinStructureClassifier(num_training=1000)
-    clf.load_prototypes(pickle_filename='bla.pickle')
+    clf.load_prototypes(force_recalculate=False)
 
     sequence = translate_aa_to_dna(load_1slva())
 
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     # run_protein_family_classifier(training, testing, word_length=4)
 
     # Protein structure classification
-    # run_protein_structure_classifier()
+    run_protein_structure_classifier()
 
     pass  # We comment a lot while trying stuff out
 

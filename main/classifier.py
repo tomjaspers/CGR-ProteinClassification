@@ -77,30 +77,41 @@ class ProteinStructureClassifier(object):
         self.alpha_prototype = None
         self.beta_prototype = None
 
-    def load_prototypes(self, pickle_filename=None):
+    def load_prototypes(self, force_recalculate=False):
         """ Load the prototype signatures for mainly alpha and mainly beta.
 
+        It will try to attempt to load the signatures from a pickle file if
+        force_recalculate is set to False.
+
+        If the pickle file cannot be loaded or force_recalculate is set to True
+        then it will use the CATH dataset to generate them, and save.
         If a pickle file is passed, it will load from there, if not, it will
         use the CATH dataset to generate them (and save this as pickle).
-
-        Always return pickle_file name.
         """
-        try:
-            with open(pickle_filename, 'r') as p:
-                self.alpha_prototype, self.beta_prototype = pickle.load(p)
-            loaded_pickle = True
-        except (IOError, TypeError, pickle.PickleError):
+        def pickle_filename():
+            return '../data/pickles/nA{0}_nB{1}_w{2}_l{3}.pickle'.format(
+                self.num_mainly_alphas,
+                self.num_mainly_betas,
+                self.word_length,
+                self.window_size)
+
+        if not force_recalculate:
+            try:
+                with open(pickle_filename(), 'r') as p:
+                    self.alpha_prototype, self.beta_prototype = pickle.load(p)
+                loaded_pickle = True
+            except (IOError, TypeError, pickle.PickleError) as e:
+                print e
+                loaded_pickle = False
+        else:
             loaded_pickle = False
-            self.alpha_prototype, self.beta_prototype = \
-                self._create_alpha_beta_prototype_structures()
 
         if not loaded_pickle:
-            # TODO: generate a pickle name using config settings
-            pickle_filename = 'bla.pickle'
-            with open(pickle_filename, 'w') as p:
+            print "Calculating"
+            self.alpha_prototype, self.beta_prototype = \
+                self._create_alpha_beta_prototype_structures()
+            with open(pickle_filename(), 'w') as p:
                 pickle.dump((self.alpha_prototype, self.beta_prototype), p)
-
-        return pickle_filename
 
     def predict_sequence(self, sequence):
         # We have to pad the end of the DNA sequence with a series of adenines
