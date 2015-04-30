@@ -113,8 +113,24 @@ def plot_cgr(cgr):
     # Genomic Signature: Characterization and Classification of
     # Species Assessed by Chaos Game Representation of Sequences
 
-    # TODO: The paper doesn't say what kind of low-pass filter
-    # TODO: The paper doesn't say what kind of log transformation
+    # - The paper doesn't say what kind of low-pass filter
+    # - The paper doesn't say what kind of log transformation
+    # => We trial & error'd our own
+
+    def lpf(a):
+        _, bin_edges = np.histogram(a, bins=a.shape[0]//10)
+
+        def cutoff(x):
+            return bin_edges[1] if x > bin_edges[2] else x
+        # Apply the cut off
+        a = np.vectorize(cutoff)(a)
+
+        # We need to re-normalize it
+        total = np.sum(a)
+        return np.vectorize(lambda x: x/total)(a)
+
+    cgr = lpf(cgr)
+
     with np.errstate(divide='ignore'):  # divide by zero warning
         cgr = np.log(cgr)
 
