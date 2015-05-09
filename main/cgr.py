@@ -4,7 +4,6 @@ import logging
 from collections import Counter
 
 import numpy as np
-import scipy.signal as signal
 import matplotlib.pyplot as plt
 
 
@@ -87,7 +86,8 @@ def create_cgr(seq, word_length):
     """
     if (set(seq) | {'C', 'G', 'A', 'T'}) != {'C', 'G', 'A', 'T'}:
         raise ValueError("create_cgr takes a DNA sequence."
-                         "{0} is not a subset of C, G, A, T".format(str(set(seq))))
+                         "{0} is not a subset "
+                         "of C, G, A, T".format(str(set(seq))))
 
     dim = 2**word_length
     # create dim x dim grid

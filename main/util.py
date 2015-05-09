@@ -63,33 +63,3 @@ def load_fasta(filename, sequence_transform=None):
         sequences = map(sequence_transform, sequences)
 
     return zip(sequences, families)
-
-
-def load_1slva():
-    # TODO: this is dev testing code, prune me later
-    return 'IAPYPQAEKGMKRQVIQLTPQEDESTLKVELLIGQTLEVDCNLHRLGGKLENKTLEGWGYDYYVFDKVSSPVSTMMHCPDEKKFVTAYLGDAGMLRYNSKLPIVVYTPDNVDVKYRVWKAEEKIDNAVVR'
-
-
-def load_protein_sequence():
-    # TODO: this is dev testing code, prune me later
-    # PDB  1TJL:A
-    return 'MQEGQNRKTSSLSILAIAGVEPYQEKPGEEYMNEAQLAHFRRILEAWRNQLRDEVDRTVTHMQDEAANFPDPVDRAAQEE' + \
-            'EFSLELRNRDRERKLIKKIEKTLKKVEDEDFGYCESCGVEIGIRRLEARPTADLCIDCKTLAEIREKQMAG'
-    #
-    # return 'MFINRWLFSTNHKDIGTLYLLFGAWAGMVGTALSILIRAELGQPGALLGDDQIYNVIVTA' + \
-    #        'HAFVMIFFMVMPMMIGGFGNWLVPLMIGAPDMAFPRMNNMSFWLLPPSFLLLLASSMVEA' + \
-    #        'GAGTGWTVYPPLAGNLAHAGASVDLTIFSLHLAGVSSILGAINFITTIINMKPPAMTQYQ' + \
-    #        'TPLFVWSVLITAVLLLLSLPVLAAGITMLLTDRNLNTTFFDPAGGGDPILYQHLFWFFGH' + \
-    #        'PEVYILILPGFGIISHVVTYYSGKKEPFGYMGMVWAMMSIGFLGFIVWAHHMFTVGLDVD' + \
-    #        'TRAYFTSATMIIAIPTGVKVFSWLATLHGGNIKWSPAMLWALGFIFLFTVGGLTGIVLSN' + \
-    #        'SSLDIVLHDTYYVVAHFHYVLSMGAVFAIMAGFVHWFPLFSGFTLDDTWAKAHFAIMFVG' + \
-    #        'VNMTFFPQHFLGLSGMPRRYSDYPDAYTTWNTVSSMGSFISLTAVLIMIFMIWEAFASKR' + \
-    #        'EVMSVSYASTNLEWLHGCPPPYHTFEEPTYVKVK'
-
-
-def load_dna_sequence():
-    # TODO: this is dev testing code, prune me later
-    with open('../data/random/chromo22.txt', 'r') as f:
-        return ''.join([filter(lambda y: y in 'CGTA', x.upper())
-                        for line in f for x in line.split()
-                        if not x.isdigit()])

@@ -6,8 +6,7 @@ from collections import Counter
 
 import numpy as np
 from sklearn.lda import LDA
-from sklearn.metrics import precision_recall_fscore_support, roc_auc_score, \
-    accuracy_score, confusion_matrix, classification_report
+from sklearn.metrics import classification_report
 
 from main.cgr import create_cgr, create_cgr_signature, cgr_distance, \
     translate_aa_to_dna
@@ -29,7 +28,7 @@ class ProteinFamilyClassifier(object):
         self.clf = LDA()
         self.clf.fit(np.array(signatures), families)
 
-       # TODO: maybe return some information about the new feature space ?
+        # TODO: maybe return some information about the new feature space ?
 
     def predict(self, data):
         if not self.clf:
@@ -46,7 +45,8 @@ class ProteinFamilyClassifier(object):
         # precision, recall, fscore, support = precision_recall_fscore_support(
         #     true_families, predicted_families)
         #
-        # confusion_matrix = confusion_matrix(true_families, predicted_families)
+        # confusion_matrix = \
+        #     confusion_matrix(true_families, predicted_families)
         #
         # metrics = {
         #     'accuracy': accuracy_score(true_families, predicted_families),
@@ -58,9 +58,7 @@ class ProteinFamilyClassifier(object):
         #     # 'roc_auc': roc_auc_score(true_families, predicted_families),
         # }
 
-        results = classification_report(true_families, predicted_families)
-
-        return results
+        return classification_report(true_families, predicted_families)
 
 
 class ProteinStructureClassifier(object):
@@ -167,13 +165,12 @@ class ProteinStructureClassifier(object):
         """ Create signature representatives (prototypes) of alpha and beta classes
 
           We use the CATH-set
-          First, we generated a CGR for each sequence. Then, we used a discriminant
-          analysis to identify the signatures' representative of the two structural
-          classes.
+          First, we generated a CGR for each sequence. Then, we used a
+          discriminant analysis to identify the signatures' representative of
+          the two structural classes.
         See Section 2.5.2
         :return: CGR for the alpha prototype, CGR for the beta prototype
         """
-
 
         # Map the PDB_IDs per Class
         pdb_ids_per_class = {
@@ -184,7 +181,8 @@ class ProteinStructureClassifier(object):
         }
 
         # CathDomainList contains a mapping of the PDB Code with the class code
-        with open(os.path.join('..', 'data', 'CATH', 'CathDomainList.txt')) as f:
+        with open(os.path.join('..', 'data', 'CATH', 'CathDomainList.txt')) \
+                as f:
             for line in f:
                 pdb_id, class_code = line.split()[:2]
                 pdb_ids_per_class[int(class_code)].add(pdb_id)
@@ -198,7 +196,8 @@ class ProteinStructureClassifier(object):
         }
 
         # CathDomainSeqs contains line pairs holding the info and the sequence
-        with open(os.path.join('..', 'data', 'CATH', 'CathDomainSeqs.txt')) as f:
+        with open(os.path.join('..', 'data', 'CATH', 'CathDomainSeqs.txt')) \
+                as f:
             while True:
                 info = f.readline().split('|')
                 sequence = f.readline()
@@ -225,9 +224,9 @@ class ProteinStructureClassifier(object):
             for seq in list(sequences_per_class[2])[:self.num_mainly_betas]]
 
         clf = LDA()
-        X = np.array(mainly_alphas + mainly_betas)
-        y = np.array([1] * self.num_mainly_alphas + [2] * self.num_mainly_betas)
-        clf.fit(X, y)
+        x = np.array(mainly_alphas + mainly_betas)
+        y = np.array([1]*self.num_mainly_alphas + [2]*self.num_mainly_betas)
+        clf.fit(x, y)
 
         # Note that the means will just be a 2^(word_length+1) array, which we
         # needs to transform back to a 2^word_length x 2^word_length array
