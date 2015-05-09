@@ -1,5 +1,6 @@
 from __future__ import division
 
+import logging
 from collections import Counter
 
 import numpy as np
@@ -7,13 +8,29 @@ import scipy.signal as signal
 import matplotlib.pyplot as plt
 
 
+_logger = logging.getLogger('CGR-ProteinClassification')
+
 # Translation from Amino Acids to DNA, as described in Section 2.2
-AA_DNA_TRANSLATION = {
+reverse_encoding_1 = {
     'A': 'GCT', 'C': 'TGC', 'E': 'GAG', 'D': 'GAC', 'G': 'GGT',
     'F': 'TTC', 'I': 'ATT', 'H': 'CAC', 'K': 'AAG', 'M': 'ATG',
     'L': 'CTA', 'N': 'AAC', 'Q': 'CAG', 'P': 'CCA', 'S': 'TCA',
     'R': 'CGA', 'T': 'ACT', 'W': 'TGG', 'V': 'GTG', 'Y': 'TAC'
 }
+reverse_encoding_2 = {
+    'A': 'GCA', 'G': 'GGA', 'M': 'ATG', 'S': 'TCG', 'C': 'TGT',
+    'H': 'CAT', 'N': 'AAT', 'T': 'ACA', 'D': 'GAT', 'I': 'ATA',
+    'P': 'CCC', 'V': 'GTA', 'E': 'GAA', 'K': 'AAA', 'Q': 'CAA',
+    'W': 'TGG', 'F': 'TTT', 'L': 'CTT', 'R': 'CGC', 'Y': 'TAT'
+}
+reverse_encoding_3 = {
+    'A': 'GCC', 'G': 'GGG', 'M': 'ATG', 'S': 'TCC', 'C': 'TGT',
+    'H': 'CAT', 'N': 'AAT', 'T': 'ACC', 'D': 'GAC', 'I': 'ATC',
+    'P': 'CCT', 'V': 'GTC', 'E': 'GAG', 'K': 'AAG', 'Q': 'CAG',
+    'W': 'TGG', 'F': 'TTC', 'L': 'TTG', 'R': 'CGT', 'Y': 'TAT'
+}
+
+AA_DNA_TRANSLATION = reverse_encoding_1
 
 
 def translate_aa_to_dna(seq):
