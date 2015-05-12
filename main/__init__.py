@@ -1,7 +1,5 @@
 import util
 
-import matplotlib.pyplot as plt
-
 from cgr import create_cgr, plot_cgr, translate_aa_to_dna
 from classifier import ProteinFamilyClassifier, ProteinStructureClassifier
 
@@ -24,29 +22,35 @@ def run_protein_family_classifier(training, testing, word_length=4):
     #     print "{0}: {1}".format(k, v)
 
 
-def run_protein_structure_classifier():
-    clf = ProteinStructureClassifier(num_training=1000)
+def run_protein_structure_classifier(data):
+    clf = ProteinStructureClassifier(num_training=2500)
     clf.load_prototypes(force_recalculate=False)
 
-    sequence = translate_aa_to_dna(util.load_1slva())
+    confusion_matrix = clf.predict(data)
 
-    structure, distances, structure_counter = clf.predict_sequence(sequence)
-    print structure_counter
-    print '=>', structure
+    print confusion_matrix
 
-    plt.plot(distances)
-    plt.show()
 
+def load_fasta_structure():
+    pass
+    # data = util.load_fasta(dataset + '.fasta',
+    #                        sequence_transform=translate_aa_to_dna,
+    #                        with_chain_label=True)
+    #
+    # data = filter(lambda x: x[1].lower() in FILTER_LIST[dataset], data)
+    # sequences = zip(*data)[0]
+    # print len(sequences)
 
 if __name__ == '__main__':
     # # Make pretty plots
-    run_cgr_plotter(word_length=8)
+    # run_cgr_plotter(word_length=8)
     #
     # # Protein family classification
-    training, testing = util.split_pfam(util.load_pfam())
-    run_protein_family_classifier(training, testing, word_length=6)
+    # training, testing = util.split_pfam(util.load_pfam())
+    # run_protein_family_classifier(training, testing, word_length=6)
 
     # # Protein structure classification
-    run_protein_structure_classifier()
+    run_protein_structure_classifier(util.load_1189())
+    # run_protein_structure_classifier(util.load_sequence_with_structure('P1'))
 
     pass  # We comment a lot while trying stuff out

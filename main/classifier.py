@@ -2,7 +2,7 @@ from __future__ import division
 
 import os
 import pickle
-from collections import Counter
+from collections import Counter, defaultdict
 
 import numpy as np
 from sklearn.lda import LDA
@@ -116,6 +116,9 @@ class ProteinStructureClassifier(object):
         if not isinstance(sequence, str):
             raise TypeError("Sequence should be a DNA string")
 
+        if self.alpha_prototype is None or self.beta_prototype is None:
+            raise RuntimeError("Cannot call predict loading prototypes")
+
         # sequence = sequence.ljust(len(sequence)//self.window_size + 1, 'A')
         sequence += 'A'*self.window_size
 
@@ -148,18 +151,65 @@ class ProteinStructureClassifier(object):
                 structure_counter['unstructured'] += 1
 
         # See 2.5.5
-        if structure_counter['beta'] < 3 or structure_counter['alpha'] < 5:
-            structure = 'Unstructured'
+        # if structure_counter['beta'] < 3 or structure_counter['alpha'] < 5:
+        #     structure = 'Unstructured'
+        total_structures = sum(structure_counter.values())
+        alpha_percentage = structure_counter['alpha'] / total_structures
+        beta_percentage = structure_counter['beta'] / total_structures
+
+        # orig:
+        # if alpha_percentage > 0.60 and beta_percentage < 0.05:
+        #     structure = 'Mainly alpha'
+        # elif alpha_percentage < 0.05 < beta_percentage:
+        #     structure = 'Mainly beta'
+        # elif 0.15 <= alpha_percentage <= 0.55 and \
+        #         0.10 <= beta_percentage <= 0.45:
+        #     structure = 'Alpha-Beta'
+        # else:
+        #     structure = 'Unclassified'
+
+        # tom 1:
+        # if alpha_percentage > 0.55 and beta_percentage < 0.10:
+        #     structure = 'Mainly alpha'
+        # elif beta_percentage > 0.45 and alpha_percentage < 0.15:
+        #     structure = 'Mainly beta'
+        # elif 0.15 <= alpha_percentage <= 0.55 and \
+        #         0.10 <= beta_percentage <= 0.45:
+        #     structure = 'Alpha-Beta'
+        # else:
+        #     structure = 'Unclassified'
+
+        # tom 2:
+        if alpha_percentage > 0.55 or beta_percentage < 0.10:
+            structure = 'Mainly alpha'
+        elif beta_percentage > 0.45 or alpha_percentage < 0.15:
+            structure = 'Mainly beta'
+        elif 0.15 <= alpha_percentage <= 0.55 and \
+                0.10 <= beta_percentage <= 0.45:
+            structure = 'Alpha-Beta'
         else:
-            if structure_counter['alpha'] > structure_counter['beta']:
-                structure = 'Mostly alpha'
-            else:
-                structure = 'Mostly beta'
+            structure = 'Unclassified'
 
         return structure, distances, structure_counter
 
     def predict(self, data):
-        pass
+        confusion_matrix = defaultdict(int)
+
+        structure_map = {
+            'mainly_alpha': 'Mainly alpha',
+            'mainly_beta': 'Mainly beta',
+            'alpha+beta': 'Alpha-Beta',
+            'alpha/beta': 'Alpha-Beta',
+        }
+        for i, (sequence, true_classification) in enumerate(data, 1):
+            print "current: {0}/{1}".format(i, len(data))
+            structure, _, _ = self.predict_sequence(sequence)
+
+            key = (structure,
+                   structure_map.get(true_classification, true_classification))
+            confusion_matrix[key] += 1
+
+        return confusion_matrix
 
     def _create_alpha_beta_prototype_structures(self):
         """ Create signature representatives (prototypes) of alpha and beta classes
@@ -194,6 +244,7 @@ class ProteinStructureClassifier(object):
             3: [],
             4: [],
         }
+
 
         # CathDomainSeqs contains line pairs holding the info and the sequence
         with open(os.path.join('..', 'data', 'CATH', 'CathDomainSeqs.txt')) \

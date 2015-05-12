@@ -60,6 +60,7 @@ PDB_URL = 'http://www.rcsb.org/pdb/download/downloadFile.do?' \
           'fileFormat=FASTA&compression=NO&structureId={0}'
 PFAM_URL = 'http://pfam.xfam.org/family/{0}/alignment/seed/format?' \
            'format=pfam&alnType=seed&order=t&case=u&gaps=none&download=0'
+CATH_URL = 'http://www.cathdb.info/version/latest/domain/{0}'
 
 
 def prune_chain_label(pdb_id):
@@ -103,6 +104,50 @@ def download_pdb_sets():
         download_set(set_name, set_pdb_ids)
 
 
+def download_protein_structures():
+    sets = {
+        'P1': P1_RAW.split(', '),
+        'Chou': CHOU_RAW.split(', '),
+        'NC': NC_RAW.split(', '),
+    }
+
+    def download_set(name, pdb_ids):
+        print "Downloading {0}, with {1} proteins".format(name, len(pdb_ids))
+        data = []
+        for i, pdb_id in enumerate(pdb_ids, 1):
+            response = requests.get(CATH_URL.format(pdb_id + '00'))
+
+            if not response.ok:
+                response = requests.get(CATH_URL.format(pdb_id + '01'))
+
+            if not response.ok:
+                print "Failed: {0} of the set {1}".format(pdb_id, name)
+                continue
+
+            if 'Mainly Alpha' in response.text:
+                structural_class = 'Mainly Alpha'
+            elif 'Mainly Beta' in response.text:
+                structural_class = 'Mainly Beta'
+            elif 'Alpha Beta' in response.text:
+                structural_class = 'Alpha Beta'
+            else:
+                print "No structure found: {0} " \
+                      "of the set {1}".format(pdb_id, name)
+                continue
+
+            data.append('{0}, {1}'.format(pdb_id, structural_class))
+
+            print ' {0}/{1}'.format(i, len(pdb_ids))
+            time.sleep(0.1)
+
+        data = '\n'.join(data)
+
+        with open(os.path.join('data', name + '.structure'), 'w') as f:
+            f.write(data)
+
+    download_set('Chou', sets['Chou'])
+
+
 def download_pfam_set(pfam_name, families):
 
     for i, (family_name, pfam_id) in enumerate(families, 1):
@@ -125,4 +170,5 @@ if __name__ == '__main__':
     # download_pdb_sets()
     # download_pfam_set('Pfam', PFAM)
     # download_pfam_set('Pfam-TN', PFAM_TN)
+    download_protein_structures()
     pass
